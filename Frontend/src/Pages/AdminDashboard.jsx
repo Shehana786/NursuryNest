@@ -42,12 +42,14 @@ const AdminDashboard = () => {
         >
           Inventory View
         </button>
+      
       </nav>
       <hr />
       <div className="flex-container">
         {tab === 'products' && <ProductManager />}
         {tab === 'orders' && <AdminOrders />}
         {tab === 'inventory' && <InventoryView />}
+         
       </div>
     </div>
   );

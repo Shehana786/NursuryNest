@@ -37,7 +37,7 @@ const Home = () => {
     <div className="main-container">
       {/* HERO */}
       <section className="hero-section">
-        <img className="hero-image" src="/assests/hero.jpg" alt="Hero Plant" />
+        <img className="hero-image" src="/assets/hero.jpg" alt="Hero Plant" />
         <div className="hero-text">
           <h1>Welcome to NatureNest 🌿</h1>
           <p>Discover, shop, and learn plant care from the experts.</p>

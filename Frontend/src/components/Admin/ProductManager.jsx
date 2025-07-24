@@ -5,18 +5,25 @@ import '../../Styles/Global.css';
 
 function ProductManager() {
   const categories = ['Indoor', 'Outdoor', 'Medicinal', 'Decorative'];
-  const [plants, setPlants] = useState([]);
+  const defaultCareTips = {
+    watering: '',
+    sunlight: '',
+    soil: '',
+    pruning: '',
+    temperature: '',
+    videoUrl:'',
+  };
 
+  const [plants, setPlants] = useState([]);
   const [plant, setPlant] = useState({
     name: '',
     price: '',
     category: '',
     description: '',
     stock: '',
-    care: '',
-    featured: false,  // <-- Added featured field
+    careTips: { ...defaultCareTips },
+    featured: false,
   });
-
   const [editingPlant, setEditingPlant] = useState(null);
   const [image, setImage] = useState(null);
 
@@ -24,7 +31,7 @@ function ProductManager() {
     try {
       const res = await axios.get('http://localhost:5000/api/admin/products');
       setPlants(res.data);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch plants');
     }
   };
@@ -36,11 +43,15 @@ function ProductManager() {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // Handle checkbox separately
-    if (type === 'checkbox') {
-      setPlant({ ...plant, [name]: checked });
+    if (name in plant.careTips) {
+      setPlant(prev => ({
+        ...prev,
+        careTips: { ...prev.careTips, [name]: value },
+      }));
+    } else if (type === 'checkbox') {
+      setPlant(prev => ({ ...prev, [name]: checked }));
     } else {
-      setPlant({ ...plant, [name]: value });
+      setPlant(prev => ({ ...prev, [name]: value }));
     }
   };
 
@@ -50,14 +61,21 @@ function ProductManager() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = new FormData();
-    Object.keys(plant).forEach(key => formData.append(key, plant[key]));
+
+    // Append all plant properties except careTips
+   Object.entries(plant).forEach(([key, val]) => {
+  if (key !== 'careTips') {
+    formData.append(key, val);
+  }
+});
+formData.append('careTips', JSON.stringify(plant.careTips ?? {}));
+
+
     if (image) formData.append('image', image);
 
     try {
       if (editingPlant) {
-        // Edit mode
         await axios.put(
           `http://localhost:5000/api/admin/products/${editingPlant._id}`,
           formData,
@@ -70,7 +88,6 @@ function ProductManager() {
         );
         alert('Plant updated!');
       } else {
-        // Add mode
         await axios.post('http://localhost:5000/api/admin/products', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -86,42 +103,42 @@ function ProductManager() {
         category: '',
         description: '',
         stock: '',
-        care: '',
-        featured: false, // reset featured to false
+        careTips: { ...defaultCareTips },
+        featured: false,
       });
       setImage(null);
       setEditingPlant(null);
       fetchPlants();
-    } catch (err) {
+    } catch {
       alert('Failed to save plant');
     }
   };
 
   const handleEdit = (plantToEdit) => {
     setPlant({
-      name: plantToEdit.name,
-      price: plantToEdit.price,
-      category: plantToEdit.category,
-      description: plantToEdit.description,
-      stock: plantToEdit.stock,
-      care: plantToEdit.care,
-      featured: plantToEdit.featured || false,  // load featured state
+      name: plantToEdit.name || '',
+      price: plantToEdit.price || '',
+      category: plantToEdit.category || '',
+      description: plantToEdit.description || '',
+      stock: plantToEdit.stock || '',
+      careTips: plantToEdit.careTips
+        ? { ...defaultCareTips, ...plantToEdit.careTips }
+        : { ...defaultCareTips },
+      featured: plantToEdit.featured || false,
     });
     setEditingPlant(plantToEdit);
+    setImage(null);
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure?')) return;
-
     try {
       await axios.delete(`http://localhost:5000/api/admin/products/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       alert('Plant deleted!');
       fetchPlants();
-    } catch (err) {
+    } catch {
       alert('Failed to delete plant');
     }
   };
@@ -135,6 +152,7 @@ function ProductManager() {
           value={plant.name}
           onChange={handleChange}
           placeholder="Plant Name"
+          required
         />
         <input
           type="number"
@@ -142,17 +160,12 @@ function ProductManager() {
           value={plant.price}
           onChange={handleChange}
           placeholder="Price"
+          required
         />
-        <select
-          name="category"
-          value={plant.category}
-          onChange={handleChange}
-        >
+        <select name="category" value={plant.category} onChange={handleChange} required>
           <option value="">-- Select Category --</option>
           {categories.map((cat, i) => (
-            <option value={cat} key={i}>
-              {cat}
-            </option>
+            <option key={i} value={cat}>{cat}</option>
           ))}
         </select>
         <textarea
@@ -160,19 +173,62 @@ function ProductManager() {
           value={plant.description}
           onChange={handleChange}
           placeholder="Description"
+          required
         />
         <input
+          type="number"
           name="stock"
           value={plant.stock}
           onChange={handleChange}
           placeholder="Stock Quantity"
+          required
         />
-        <textarea
-          name="care"
-          value={plant.care}
+
+        <h3>Care Tips</h3>
+        <input
+          type="text"
+          name="watering"
+          value={plant.careTips.watering}
           onChange={handleChange}
-          placeholder="Care Instructions"
+          placeholder="Watering Instructions"
         />
+        <input
+          type="text"
+          name="sunlight"
+          value={plant.careTips.sunlight}
+          onChange={handleChange}
+          placeholder="Sunlight Needs"
+        />
+        <input
+          type="text"
+          name="soil"
+          value={plant.careTips.soil}
+          onChange={handleChange}
+          placeholder="Soil Type"
+        />
+        <input
+          type="text"
+          name="pruning"
+          value={plant.careTips.pruning}
+          onChange={handleChange}
+          placeholder="Pruning Instructions"
+        />
+        <input
+          type="text"
+          name="temperature"
+          value={plant.careTips.temperature}
+          onChange={handleChange}
+          placeholder="Temperature Range"
+        />
+        <input
+    type="text"
+    name="videoUrl"
+    value={plant.careTips.videoUrl || ''}
+    onChange={handleChange}
+    placeholder="Video URL (e.g., YouTube embed link)"
+/>
+
+
         <label>
           <input
             type="checkbox"
@@ -183,9 +239,7 @@ function ProductManager() {
           Featured Product
         </label>
         <input type="file" onChange={handleImageChange} />
-        <button type="submit">
-          {editingPlant ? 'Update Plant' : 'Add Plant'}
-        </button>
+        <button type="submit">{editingPlant ? 'Update Plant' : 'Add Plant'}</button>
       </form>
 
       <div style={{ flex: 1 }}>
