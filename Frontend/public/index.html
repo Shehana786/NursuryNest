@@ -3,9 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plant Nursery App</title>
+  <meta name="description" content="NatureNest - Your premium online plant nursery with a wide variety of indoor and outdoor plants, gardening tools, and expert care guides." />
+  <meta name="keywords" content="plants, nursery, gardening, indoor plants, outdoor plants, plant care, succulents, gardening tools" />
+  <meta name="theme-color" content="#2E7D32" />
+  
+  <title>NatureNest | Premium Plant Nursery & Gardening Supplies</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/assets/hero.jpg" as="image" />
+  
+  <!-- iOS meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  
+  <!-- Facebook Open Graph / Social Media Meta Tags -->
+  <meta property="og:title" content="NatureNest | Premium Plant Nursery" />
+  <meta property="og:description" content="Discover our collection of premium plants and gardening supplies for your home and garden." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://naturenest.example.com" />
+  <meta property="og:image" content="https://naturenest.example.com/social-preview.jpg" />
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NatureNest | Premium Plant Nursery" />
+  <meta name="twitter:description" content="Discover our collection of premium plants and gardening supplies for your home and garden." />
+  <meta name="twitter:image" content="https://naturenest.example.com/social-preview.jpg" />
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://naturenest.example.com" />
 </head>
 <body>
+  <noscript>
+    <div style="text-align: center; padding: 2rem; background: #f8f9fa; color: #333;">
+      <h1 style="color: #2E7D32;">JavaScript is disabled</h1>
+      <p>This application requires JavaScript to function properly. Please enable JavaScript in your browser settings.</p>
+      <p>Visit our <a href="/basic-version" style="color: #2E7D32;">basic version</a> if you prefer to browse without JavaScript.</p>
+    </div>
+  </noscript>
+  
   <div id="root"></div>
+  
+  <!-- Load web fonts after the page renders -->
+  <script>
+    // Optional: Load web fonts after page load for better performance
+    document.addEventListener('DOMContentLoaded', function() {
+      if ('fonts' in document) {
+        Promise.all([
+          document.fonts.load('1em Poppins'),
+          document.fonts.load('700 1em Poppins'),
+          document.fonts.load('1em Playfair Display')
+        ]).then(function() {
+          document.documentElement.classList.add('fonts-loaded');
+        });
+      }
+    });
+    
+    // Service worker registration for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>

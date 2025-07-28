@@ -9,6 +9,7 @@ import Checkout from './Pages/Checkout';
 import Signup from './Pages/Signup';
 import AdminDashboard from './Pages/AdminDashboard';
 import './Styles/Global.css';
+import CareTipsPage from './Pages/CareTipsPage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -40,6 +41,7 @@ useEffect(() => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Catalog" element={<Catalog />} />
+         <Route path="/caretips" element={<CareTipsPage />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/Signup" element={<Signup />} />
         <Route path="/Cart" element={<Cart />} />

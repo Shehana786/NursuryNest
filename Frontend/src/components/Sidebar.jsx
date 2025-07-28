@@ -2,7 +2,7 @@ import React from 'react';
 
 const categories = [
   'Indoor', 'Outdoor', 'Medicinal', 'Evergreen',
-  'Flowering', 'Succulents', 'Bonsai', 'Plant Tools'
+  'Flowering', 'Ornamental', 'Bonsai', 'Plant Tools'
 ];
 
 const Sidebar = ({ selectedCategories, onCategoryChange }) => {

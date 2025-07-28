@@ -6,7 +6,6 @@ import { useCart } from '../Context/CartContext';
 import axios from 'axios';
 import '../Styles/Global.css';
 
-
 const Catalog = () => {
   const [plants, setPlants] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -25,23 +24,22 @@ const Catalog = () => {
       .catch(() => alert('Failed to load products'));
   }, []);
 
-useEffect(() => {
-  const fetchPlants = async () => {
-    try {
-      let url = 'http://localhost:5000/api/products';
-      if (selectedCategories.length === 1) {
-        url += `?category=${selectedCategories[0]}`;
+  useEffect(() => {
+    const fetchPlants = async () => {
+      try {
+        let url = 'http://localhost:5000/api/products';
+        if (selectedCategories.length === 1) {
+          url += `?category=${selectedCategories[0]}`;
+        }
+        const res = await axios.get(url);
+        setPlants(res.data);
+        setFiltered(res.data);
+      } catch {
+        alert('Failed to load products');
       }
-      const res = await axios.get(url);
-      setPlants(res.data);
-      setFiltered(res.data);
-    } catch {
-      alert('Failed to load products');
-    }
-  };
-  fetchPlants();
-}, [selectedCategories]);
-
+    };
+    fetchPlants();
+  }, [selectedCategories]);
 
   const handleCategoryChange = (e) => {
     const { value, checked } = e.target;
@@ -85,48 +83,56 @@ useEffect(() => {
   };
 
   return (
-    <div className="catalog-container">
-      <Sidebar selectedCategories={selectedCategories} onCategoryChange={handleCategoryChange} />
-      <div className="plant-grid">
-        {filtered.length > 0 ? (
-          filtered.map((pl) => (
-            <div key={pl._id} onClick={() => setSelectedPlant(pl)} style={{ cursor: 'pointer' }}>
-              <PlantCard plant={pl} />
-            </div>
-          ))
-        ) : (
-          <p>No plants match the selected filters.</p>
-        )}
-      </div>
-      <div className="details-section">
-        {selectedPlant ? (
-          <>
-            <img className="details-image" src={`http://localhost:5000/Uploads/${selectedPlant.imageUrl}`} alt={selectedPlant.name} />
-            <h2 className="details-title">{selectedPlant.name}</h2>
-            <p className="details-text"><strong>Description:</strong> {selectedPlant.description}</p>
-            <p className="details-text"><strong>Care:</strong> {selectedPlant.care}</p>
-            <p className="price">Price: ${selectedPlant.price.toFixed(2)}</p>
-            <p className="quantity">Stock: {selectedPlant.stock}</p>
+    <div className="catalog-page">
+      <div className="catalog-container">
+        <Sidebar selectedCategories={selectedCategories} onCategoryChange={handleCategoryChange} />
 
-            <div className="quantity-selector">
-              <button onClick={decrementQuantity} disabled={quantity <= 1}>-</button>
-              <span>{quantity}</span>
-              <button onClick={incrementQuantity} disabled={quantity >= selectedPlant.stock}>+</button>
-            </div>
+        <div className="catalog-main">
+          <div className="plant-grid">
+            {filtered.length > 0 ? (
+              filtered.map((pl) => (
+                <div key={pl._id} className="plant-card-wrapper" onClick={() => setSelectedPlant(pl)}>
+                  <PlantCard plant={pl} />
+                </div>
+              ))
+            ) : (
+              <p>No plants match the selected filters.</p>
+            )}
+          </div>
+        </div>
 
-            <div className="button-group">
-              {!isInCart ? (
-                <button className="button" onClick={addToCartHandler}>Add to Cart</button>
-              ) : (
-                <button className="button remove" onClick={removeFromCartHandler}>
-                  Remove from Cart
-                </button>
-              )}
+        <div className="details-section">
+          {selectedPlant ? (
+            <div className="details-card">
+              <img
+                className="details-image"
+                src={`http://localhost:5000/Uploads/${selectedPlant.imageUrl}`}
+                alt={selectedPlant.name}
+              />
+              <h2 className="details-title">{selectedPlant.name}</h2>
+              <p className="details-text"><strong>Description:</strong> {selectedPlant.description}</p>
+              <p className="details-text"><strong>Care:</strong> {selectedPlant.care}</p>
+              <p className="details-price">Price: ${selectedPlant.price.toFixed(2)}</p>
+              <p className="details-stock">Stock: {selectedPlant.stock}</p>
+
+              <div className="quantity-selector">
+                <button onClick={decrementQuantity} disabled={quantity <= 1}>-</button>
+                <span>{quantity}</span>
+                <button onClick={incrementQuantity} disabled={quantity >= selectedPlant.stock}>+</button>
+              </div>
+
+              <div className="button-group">
+                {!isInCart ? (
+                  <button className="btn add" onClick={addToCartHandler}>Add to Cart</button>
+                ) : (
+                  <button className="btn remove" onClick={removeFromCartHandler}>Remove from Cart</button>
+                )}
+              </div>
             </div>
-          </>
-        ) : (
-          <p>Select a plant to see details</p>
-        )}
+          ) : (
+            <p className="details-placeholder">Select a plant to see details</p>
+          )}
+        </div>
       </div>
     </div>
   );
